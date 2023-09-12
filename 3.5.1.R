@@ -15,7 +15,7 @@ x <- function(t) {
 # Échantillonner le signal x(t) pour obtenir xn
 xn <- x(t)
 
-# Calculer la TFD en utilisant la fonction fft()
+# Calculer la TFD
 Xk <- fft(xn)
 
 print(Xk)
