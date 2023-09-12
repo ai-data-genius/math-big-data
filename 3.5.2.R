@@ -1,7 +1,7 @@
 ### Question 1 ###
 
 # Définir les paramètres
-N <- 24
+N2 <- 24
 Te <- 1/16  # Période d'échantillonnage (fe = 16 Hz)
 t <- seq(0, (N-1)*Te, by=Te)  # Créer un vecteur de temps
 
@@ -16,9 +16,9 @@ x <- function(t) {
 xn <- x(t)
 
 # Calculer la TFD
-Xk <- fft(xn)
+Xk1 <- fft(xn)
 
-print(Xk)
+print(Xk1)
 
 ### Question 2 ###
 
@@ -36,7 +36,7 @@ df_signal <- data.frame(t, xn)
 )
 
 # Calculer le spectre d'amplitude
-amplitude_spectrum <- abs(Xk)
+amplitude_spectrum <- abs(Xk1)
 
 # Créer un data frame pour le spectre d'amplitude
 df_spectrum <- data.frame(
