@@ -1,7 +1,7 @@
 ### Question 1 ###
 
 # Définir les paramètres
-N <- 8
+N <- 24
 Te <- 1/16  # Période d'échantillonnage (fe = 16 Hz)
 t <- seq(0, (N-1)*Te, by=Te)  # Créer un vecteur de temps
 n <- 0:(N-1)
