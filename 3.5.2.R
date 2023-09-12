@@ -24,6 +24,8 @@ for (k in 0:(N-1)) {
   }
 }
 
+Xk <- round(Xk, digits = 8)
+
 print(Xk)
 
 ### Question 2 ###
