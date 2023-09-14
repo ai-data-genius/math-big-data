@@ -1,3 +1,5 @@
+#Question 1
+
 # Load the ggplot2 package for plotting
 library(ggplot2)
 
@@ -16,7 +18,6 @@ h_periodic <- function(t) {
   t_mod <- (t - pi) %% (2 * pi) - pi  # Adjusting for correct modulo behavior
   ifelse(t_mod >= 0 & t_mod < pi, exp(-t_mod / pi), 0)
 }
-
 
 # Generate a sequence of t values between -5*pi and 5*pi
 t_values <- seq(-5 * pi, 5 * pi, length.out = 1000)
@@ -54,25 +55,7 @@ ggplot(df_h, aes(x = t, y = y)) +
 
 
 ------
-# Q2
-
-#Redefining f g h functions
-# Define the periodic versions of the functions f, g, and h
-f_periodic <- function(t) {
-  t_mod <- (t - pi) %% (2 * pi) - pi
-  pi - abs(t_mod)
-}
-
-g_periodic <- function(t) {
-  t_mod <- (t - pi) %% (2 * pi) - pi
-  t_mod^2 - pi^2
-}
-
-h_periodic <- function(t) {
-  t_mod <- (t - pi) %% (2 * pi) - pi  # Adjusting for correct modulo behavior
-  ifelse(t_mod >= 0 & t_mod < pi, exp(-t_mod / pi), 0)
-}
-
+# Question 2
 
 # Define the functions for Fourier coefficients
 calcul_a0 <- function(func) {
@@ -131,24 +114,6 @@ cat("a0 = ", a0_h, "\nan = ", an_h, "\nbn = ", bn_h, "\ncn = ", cn_h, "\n")
 # Q3
 # Required libraries
 library(ggplot2)
-
-# Define the periodic version of f(t)
-f_periodic <- function(t) {
-  t_mod <- (t - pi) %% (2 * pi) - pi
-  pi - abs(t_mod)
-}
-# Define the periodic version of g(t)
-g_periodic <- function(t) {
-  t_mod <- (t - pi) %% (2 * pi) - pi
-  t_mod^2 - pi^2
-}
-
-# Define the periodic version of h(t)
-h_periodic <- function(t) {
-  t_mod <- (t - pi) %% (2 * pi) - pi  # Adjusting for correct modulo behavior
-  ifelse(t_mod >= 0 & t_mod < pi, exp(-t_mod / pi), 0)
-}
-
 
 # Define the integrands for the coefficients
 integrand_a0 <- function(t, func) {
@@ -237,7 +202,6 @@ data_combined_g <- do.call(rbind, data_list_g)
 data_combined_h <- do.call(rbind, data_list_h)
 
 
-
 # Plot with thinner lines
 ggplot(data_combined, aes(x = t)) + 
   geom_line(aes(y = f), color = 'black', size = 0.6) +
@@ -268,28 +232,8 @@ ggplot(data_combined_h, aes(x = t)) +
        y = "Function Value") + 
   theme_minimal()
 
-#-------------------------
-
+# -------------------------------
 #Question 4
-
-# Define the periodic version of f(t)
-f_periodic <- function(t) {
-  t_mod <- (t - pi) %% (2 * pi) - pi
-  pi - abs(t_mod)
-}
-
-# Define the integrands for the coefficients of the real series
-integrand_a0 <- function(t, func) {
-  func(t)
-}
-
-integrand_an <- function(t, func, n) {
-  func(t) * cos(n * t)
-}
-
-integrand_bn <- function(t, func, n) {
-  func(t) * sin(n * t)
-}
 
 # Calculate the Fourier coefficients for n = 1 to 7
 N <- 7
@@ -297,58 +241,61 @@ a_values <- numeric(N)
 b_values <- numeric(N)
 t_values <- seq(-pi, pi, length.out = 1000)
 
-# Calculate a0
-a0 <- (1 / (2 * pi)) * integrate(function(t) integrand_a0(t, f_periodic), -pi, pi)$value
-
-# Calculate an and bn
-for (n in 1:N) {
-  a_values[n] <- (1 / pi) * integrate(function(t) integrand_an(t, f_periodic, n), -pi, pi)$value
-  b_values[n] <- (1 / pi) * integrate(function(t) integrand_bn(t, f_periodic, n), -pi, pi)$value
+plot_fourier_spectra <- function(func_periodic, func_name) {
+  # Calculate a0
+  a0 <- (1 / (2 * pi)) * integrate(function(t) integrand_a0(t, func_periodic), -pi, pi)$value
+  
+  # Calculate an and bn
+  a_values <- numeric(N)
+  b_values <- numeric(N)
+  for (n in 1:N) {
+    a_values[n] <- (1 / pi) * integrate(function(t) integrand_an(t, func_periodic, n), -pi, pi)$value
+    b_values[n] <- (1 / pi) * integrate(function(t) integrand_bn(t, func_periodic, n), -pi, pi)$value
+  }
+  
+  # Calculate the amplitude and phase
+  amplitude <- sqrt(a_values^2 + b_values^2)
+  phase <- -atan2(b_values, a_values)
+  
+  # Plot the amplitude spectrum for f(t) - Real Series
+  plot_title = paste("Amplitude Spectrum for", func_name, "- Real Series")
+  df_amplitude <- data.frame(n = 1:N, amplitude = amplitude)
+  print(ggplot(df_amplitude, aes(x = n, y = amplitude)) +
+    geom_bar(stat = "identity", fill = 'blue') +
+    labs(title = plot_title, x = "Harmonic n", y = "Amplitude") +
+    theme_minimal() +
+    ylim(0, max(amplitude) + 0.5))
+  
+  # Plot the phase spectrum for f(t) - Real Series
+  plot_title = paste("Phase Spectrum for ",func_name, " - Real Series")
+  df_phase <- data.frame(n = 1:N, phase = phase)
+  print(ggplot(df_phase, aes(x = n, y = phase)) +
+    geom_bar(stat = "identity", fill = 'red') +
+    labs(title = plot_title, x = "Harmonic n", y = "Phase (in radians)") +
+    theme_minimal())
+  
+  # Calculate the complex Fourier coefficients
+  cn_values <- complex(real = rep(0, length(n_values_complex)), imaginary = rep(0, length(n_values_complex)))
+  for (idx in 1:length(n_values_complex)) {
+    n <- n_values_complex[idx]
+    cn_values[idx] <- (1 / (2 * pi)) * integrate(function(t) Re(integrand_cn(t, func_periodic, n)), -pi, pi)$value +
+      1i * (1 / (2 * pi)) * integrate(function(t) Im(integrand_cn(t, func_periodic, n)), -pi, pi)$value
+  }
+  
+  # Extract amplitude from complex coefficients
+  amplitude_complex <- Mod(cn_values)
+  
+  # Plot the amplitude spectrum for f(t) - Complex Series
+  plot_title = paste("Amplitude Spectrum for ",func_name, " - Complex Series")
+  df_complex <- data.frame(n = n_values_complex, amplitude = amplitude_complex)
+  print(ggplot(df_complex, aes(x = n, y = amplitude)) +
+    geom_bar(stat = "identity", fill = 'purple') +
+    labs(title = plot_title, x = "Harmonic n", y = "Amplitude") +
+    theme_minimal())
+  
 }
 
-# Calculate the amplitude and phase for each n
-amplitude <- sqrt(a_values^2 + b_values^2)
-phase <- -atan2(b_values, a_values)
-
-# Plot the amplitude spectrum for f(t) - Real Series
-df_amplitude <- data.frame(n = 1:N, amplitude = amplitude)
-ggplot(df_amplitude, aes(x = n, y = amplitude)) +
-  geom_bar(stat = "identity", fill = 'blue') +
-  labs(title = "Amplitude Spectrum for f(t) - Real Series", x = "Harmonic n", y = "Amplitude") +
-  theme_minimal() +
-  ylim(0, max(amplitude) + 0.5)
-
-# Plot the phase spectrum for f(t) - Real Series
-df_phase <- data.frame(n = 1:N, phase = phase)
-ggplot(df_phase, aes(x = n, y = phase)) +
-  geom_bar(stat = "identity", fill = 'red') +
-  labs(title = "Phase Spectrum for f(t) - Real Series", x = "Harmonic n", y = "Phase (in radians)") +
-  theme_minimal()
-
-
-# Define the integrand for the complex coefficients
-integrand_cn <- function(t, func, n) {
-  func(t) * exp(-1i * n * t)
-}
-
-# Calculate the complex Fourier coefficients for n = -7 to 7
-N_complex <- 7
-n_values_complex <- seq(-N_complex, N_complex, by = 1)
-cn_values <- complex(real = rep(0, length(n_values_complex)), imaginary = rep(0, length(n_values_complex)))
-t_values <- seq(-pi, pi, length.out = 1000)
-
-for (idx in 1:length(n_values_complex)) {
-  n <- n_values_complex[idx]
-  cn_values[idx] <- (1 / (2 * pi)) * integrate(function(t) Re(integrand_cn(t, f_periodic, n)), -pi, pi)$value +
-    1i * (1 / (2 * pi)) * integrate(function(t) Im(integrand_cn(t, f_periodic, n)), -pi, pi)$value
-}
-
-# Extract amplitude from complex coefficients
-amplitude_complex <- Mod(cn_values)
-
-# Plot the amplitude spectrum for f(t) - Complex Series
-df_complex <- data.frame(n = n_values_complex, amplitude = amplitude_complex)
-ggplot(df_complex, aes(x = n, y = amplitude)) +
-  geom_bar(stat = "identity", fill = 'purple') +
-  labs(title = "Amplitude Spectrum for f(t) - Complex Series", x = "Harmonic n", y = "Amplitude") +
-  theme_minimal()
+# Call the function for each periodic function
+plot_fourier_spectra(f_periodic, "f(t)")
+plot_fourier_spectra(g_periodic, "g(t)")
+plot_fourier_spectra(h_periodic, "h(t)")
