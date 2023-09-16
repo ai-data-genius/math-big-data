@@ -30,6 +30,7 @@ cft <- function(signal, t_values, f) {
     freq <- f[j]
     integrand <- signal(t_values) * exp(-1i * 2 * pi * freq * t_values)
     transform_values[j] <- trapz(t_values, integrand)
+    #trapz ?
   }
   
   return(transform_values)

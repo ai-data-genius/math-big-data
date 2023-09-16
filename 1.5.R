@@ -54,7 +54,7 @@ ggplot(df_h, aes(x = t, y = y)) +
   ylab('h(t)')
 
 
-------
+#------
 # Question 2
 
 # Define the functions for Fourier coefficients
@@ -83,21 +83,21 @@ calcul_bn <- function(func, n) {
 n <- as.integer(readline(prompt = "Enter the value of n: "))
 
 # Calculate Fourier coefficients for f(t)
-a0_f <- calcul_a0(f)
-an_f <- calcul_an(f, n)
-bn_f <- calcul_bn(f, n)
+a0_f <- calcul_a0(f_periodic)
+an_f <- calcul_an(f_periodic, n)
+bn_f <- calcul_bn(f_periodic, n)
 cn_f <- sqrt(an_f^2 + bn_f^2)
 
 # Calculate Fourier coefficients for g(t)
-a0_g <- calcul_a0(g)
-an_g <- calcul_an(g, n)
-bn_g <- calcul_bn(g, n)
+a0_g <- calcul_a0(g_periodic)
+an_g <- calcul_an(g_periodic, n)
+bn_g <- calcul_bn(g_periodic, n)
 cn_g <- sqrt(an_g^2 + bn_g^2)
 
 # Calculate Fourier coefficients for h(t)
-a0_h <- calcul_a0(h)
-an_h <- calcul_an(h, n)
-bn_h <- calcul_bn(h, n)
+a0_h <- calcul_a0(h_periodic)
+an_h <- calcul_an(h_periodic, n)
+bn_h <- calcul_bn(h_periodic, n)
 cn_h <- sqrt(an_h^2 + bn_h^2)
 
 # Print the results
@@ -274,13 +274,16 @@ plot_fourier_spectra <- function(func_periodic, func_name) {
     labs(title = plot_title, x = "Harmonic n", y = "Phase (in radians)") +
     theme_minimal())
   
+  n_values_complex <- 1:N
   # Calculate the complex Fourier coefficients
   cn_values <- complex(real = rep(0, length(n_values_complex)), imaginary = rep(0, length(n_values_complex)))
   for (idx in 1:length(n_values_complex)) {
     n <- n_values_complex[idx]
-    cn_values[idx] <- (1 / (2 * pi)) * integrate(function(t) Re(integrand_cn(t, func_periodic, n)), -pi, pi)$value +
-      1i * (1 / (2 * pi)) * integrate(function(t) Im(integrand_cn(t, func_periodic, n)), -pi, pi)$value
+    real_part <- (1 / (2 * pi)) * integrate(function(t) integrand_an(t, func_periodic, n), -pi, pi)$value
+    imag_part <- -(1 / (2 * pi)) * integrate(function(t) integrand_bn(t, func_periodic, n), -pi, pi)$value
+    cn_values[idx] <- complex(real = real_part, imaginary = imag_part)
   }
+  
   
   # Extract amplitude from complex coefficients
   amplitude_complex <- Mod(cn_values)
