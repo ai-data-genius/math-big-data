@@ -1,65 +1,65 @@
 ### Question 1 ###
 
 # Définir les paramètres
-N1 <- 24
+N <- 8
 Te <- 1/16  # Période d'échantillonnage (fe = 16 Hz)
-t1 <- seq(0, (N1-1)*Te, by=Te)  # Créer un vecteur de temps
-n1 <- 0:(N1-1)
-xt1 <- 3 * sin(8 * pi * t1) + 4 * cos(6 * pi * t1)
+t <- seq(0, (N-1)*Te, by=Te)  # Créer un vecteur de temps
+n <- 0:(N-1)
+xt <- 2 * sin(8 * pi * t) + 8 * cos(4 * pi * t)
 
 # Définir la fonction x(t)
 x <- function(t) {
-  return(3 * sin(8 * pi * t1) + 4 * cos(6 * pi * t1))
+  return(2 * sin(8 * pi * t) + 8 * cos(4 * pi * t))
 }
 
 # Échantillonner le signal x(t) pour obtenir xn
-xn <- x(t1)
+xn <- x(t)
 
 # Calculer la TFD
-Xk1 <- complex(real=rep(0,N1), imaginary=rep(0,N1)) # Initialiser un vecteur complexe
+Xk <- complex(real=rep(0,N), imaginary=rep(0,N)) # Initialiser un vecteur complexe
 
-for (k in 0:(N1-1)) {
-  for (nn in n1) {
-    Xk1[k+1] = Xk1[k+1] + xt1[nn+1] * exp(-1i * 2 * pi * k * nn / N1)
+for (k in 0:(N-1)) {
+  for (nn in n) {
+    Xk[k+1] = Xk[k+1] + xt[nn+1] * exp(-1i * 2 * pi * k * nn / N)
   }
 }
 
-Xk1 <- round(Xk1, digits = 8)
+Xk <- round(Xk, digits = 8)
 
-print(Xk1)
+print(Xk)
 
 ### Question 2 ###
 
 library(ggplot2)
 
 # Créer un data frame pour le signal xn
-df_signal <- data.frame(t1, xn)
+df_signal <- data.frame(t, xn)
 
 # Créer un vecteur de temps pour une interpolation plus fine
-t_interpolation <- seq(0, (N1-1)*Te, length.out = 1000)
+t_interpolation <- seq(0, (N-1)*Te, length.out = 1000)
 
 # Calculer la sinusoïde correspondante à votre signal avec interpolation
-sinusoide_interpol <- 3 * sin(8 * pi * t_interpolation) + 4 * cos(6 * pi * t_interpolation)
+sinusoide_interpol <- 2 * sin(8 * pi * t_interpolation) + 8 * cos(4 * pi * t_interpolation)
 
 # Créer un data frame pour la sinusoïde interpolée
-df_sinusoide_interpol <- data.frame(t1 = t_interpolation, sinusoide = sinusoide_interpol)
+df_sinusoide_interpol <- data.frame(t = t_interpolation, sinusoide = sinusoide_interpol)
 
 # Tracer le signal et la sinusoïde interpolée sur le même graphique
 (
   ggplot() +
-    geom_line(data = df_signal, aes(x = t1, y = xn), color = "blue", linetype = "dashed") +
-    geom_path(data = df_sinusoide_interpol, aes(x = t1, y = sinusoide), color = "red") +
-    geom_point(data = df_signal, aes(x = t1, y = xn), color = "blue") +  # Ajouter des points bleus pour le signal
+    geom_line(data = df_signal, aes(x = t, y = xn), color = "blue", linetype = "dashed") +
+    geom_path(data = df_sinusoide_interpol, aes(x = t, y = sinusoide), color = "red") +
+    geom_point(data = df_signal, aes(x = t, y = xn), color = "blue") +  # Ajouter des points bleus pour le signal
     labs(x = "Temps", y = "Amplitude") +
     ggtitle("Signal x(t) et Sinusoïde correspondante (interpolée)")
 )
 
 # Calculer le spectre d'amplitude
-amplitude_spectrum <- Mod(Xk1)
+amplitude_spectrum <- Mod(Xk)
 
 # Créer un data frame pour le spectre d'amplitude
 df_spectrum <- data.frame(
-  frequency = seq(0, (N1-1)*(1/Te), by=1/Te),
+  frequency = seq(0, (N-1)*(1/Te), by=1/Te),
   amplitude_spectrum
 )
 

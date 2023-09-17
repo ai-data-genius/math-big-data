@@ -10,13 +10,17 @@ fft_recursive <- function(x) {
   return(c(even + T * odd, even - T * odd))
 }
 
-# Exemple de calcul FFT
+# Exemple de calcul FFT avec une sinusoïde plus distincte
 N <- 32  # Taille de la séquence
-x <- sin(2 * pi * (1:N) / N)  # Séquence de données contenant une sinusoïde
-fft_result <- fft_recursive(x)
+f <- 4  # Fréquence de la sinusoïde
+x <- sin(2 * pi * f * (1:N) / N)  # Séquence de données contenant une sinusoïde
 
+
+# Calculer la FFT
+fft_result <- fft_recursive(round(x, digits = 10))
 
 print(fft_result)
+
 
 # Calculer la magnitude de la séquence FFT
 magnitude <- Mod(fft_result)
@@ -24,16 +28,18 @@ magnitude <- Mod(fft_result)
 # Afficher la magnitude
 print(magnitude)
 
-# Créer un graphique pour la partie réelle et imaginaire des composantes
+# Graphique pour la partie réelle et imaginaire des composantes
 par(mfrow=c(2, 1))  # Divise la zone de tracé en deux parties
 
-# Partie réelle
-plot(Re(fft_result), type = "bar", main = "Partie Réelle des Composantes")
+# Partie réelle (sans arrondi)
+real_part <- Re(fft_result)
+barplot(real_part, col = "skyblue", main = "Partie Réelle des Composantes", xlab = "Fréquence", ylab = "Amplitude")
 xlabel <- seq(0, length(fft_result) - 1, by = 1)
 axis(1, at = xlabel, labels = xlabel)
 
 # Partie imaginaire
-plot(Im(fft_result), type = "bar", main = "Partie Imaginaire des Composantes")
+imag_part <- Im(fft_result)
+barplot(imag_part, col = "lightcoral", main = "Partie Imaginaire des Composantes", xlab = "Fréquence", ylab = "Amplitude")
 xlabel <- seq(0, length(fft_result) - 1, by = 1)
 axis(1, at = xlabel, labels = xlabel)
 
