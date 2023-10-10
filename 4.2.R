@@ -15,7 +15,7 @@ chi_squared_test <- function(theoretical, observed) {
 }
 
 # Données
-theoretical <- c(10, 10, 15, 20, 30, 15)
+theoretical <- c(20, 20, 30, 40, 60, 30)
 observed <- c(30, 14, 34, 45, 57, 20)
 
 # Appliquez le test du chi-squared
